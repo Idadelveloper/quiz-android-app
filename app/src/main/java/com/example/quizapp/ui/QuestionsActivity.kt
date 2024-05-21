@@ -1,6 +1,7 @@
 package com.example.quizapp.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -36,6 +37,8 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var questionsList: MutableList<Question>
     private var selectedAnswer = 0
     private lateinit var currentQuestion: Question
+    private lateinit var name: String
+    private var score = 0
     private var answered = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,26 +72,39 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
         Log.d("QuestionSize", "${questionsList.size}")
 
         showNextQuestion()
+
+        if (intent.hasExtra(Constants.USER_NAME)) {
+            name = intent.getStringExtra(Constants.USER_NAME)!!
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun showNextQuestion() {
-        resetOptions()
-        val question = questionsList[questionsCounter]
-        flagImage.setImageResource(question.image)
-        progressBar.progress = questionsCounter
-        textViewProgress.text = "${questionsCounter + 1}/${progressBar.max}"
-        textViewQuestion.text = question.question
-        textViewOptionOne.text = question.optionOne
-        textViewOptionTwo.text = question.optionTwo
-        textViewOptionThree.text = question.optionThree
-        textViewOptionFour.text = question.optionFour
+
 
         if (questionsCounter < questionsList.size) {
             checkButton.text = "CHECK"
             currentQuestion = questionsList[questionsCounter]
+
+            resetOptions()
+            val question = questionsList[questionsCounter]
+            flagImage.setImageResource(question.image)
+            progressBar.progress = questionsCounter
+            textViewProgress.text = "${questionsCounter + 1}/${progressBar.max}"
+            textViewQuestion.text = question.question
+            textViewOptionOne.text = question.optionOne
+            textViewOptionTwo.text = question.optionTwo
+            textViewOptionThree.text = question.optionThree
+            textViewOptionFour.text = question.optionFour
         } else {
             checkButton.text = "FINISH"
+            Intent(this, ResultActivity::class.java).also {
+                it.putExtra(Constants.USER_NAME, name)
+                it.putExtra(Constants.SCORE, score)
+                it.putExtra(Constants.TOTAL_QUESTIONS, questionsList.size)
+
+                startActivity(it)
+            }
         }
 
         questionsCounter++
@@ -155,6 +171,7 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
         if (selectedAnswer
             == currentQuestion.correctAnswer) {
+            score++
             highlightAnswer(selectedAnswer)
         } else {
             when (selectedAnswer) {
