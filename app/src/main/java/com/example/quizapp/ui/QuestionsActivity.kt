@@ -68,11 +68,11 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
         questionsList = Constants.getQuestions()
         Log.d("QuestionSize", "${questionsList.size}")
 
-        setQuestion()
+        showNextQuestion()
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setQuestion() {
+    private fun showNextQuestion() {
         resetOptions()
         val question = questionsList[questionsCounter]
         flagImage.setImageResource(question.image)
@@ -112,17 +112,6 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun selectedOption(textView: TextView, selectedOptionNumber: Int) {
-        resetOptions()
-
-        textView.setTextColor(Color.parseColor("#363A43"))
-        textView.setTypeface(textView.typeface, Typeface.BOLD)
-        textView.background = ContextCompat.getDrawable(
-            this,
-            R.drawable.selected_option_border_bg
-        )
-    }
-
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.tex_view_option_one -> {
@@ -142,11 +131,23 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
                 if (!answered) {
                     checkAnswer()
                 } else {
-                    setQuestion()
+                    showNextQuestion()
                 }
                 selectedAnswer = 0
             }
         }
+    }
+
+    private fun selectedOption(textView: TextView, selectOptionNumber: Int) {
+        resetOptions()
+        selectedAnswer = selectOptionNumber
+
+        textView.setTextColor(Color.parseColor("#363A43"))
+        textView.setTypeface(textView.typeface, Typeface.BOLD)
+        textView.background = ContextCompat.getDrawable(
+            this,
+            R.drawable.selected_option_border_bg
+        )
     }
 
     private fun checkAnswer() {
